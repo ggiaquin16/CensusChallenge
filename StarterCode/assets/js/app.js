@@ -12,7 +12,7 @@ var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
 // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
-var svg = d3.select(".chart")
+var svg = d3.select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -26,6 +26,8 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
     // Step 1: Parse Data/Cast as numbers
     // ==============================
     censusData.forEach(function(data) {
+
+      console.log(data);
       data.obesity = +data.obesity;
       data.income = +data.income;
     });
@@ -56,15 +58,26 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
 
     // Step 5: Create Circles
     // ==============================
-    var circlesGroup = chartGroup.selectAll("circle")
+    var circlesGroup = chartGroup.selectAll(".bubble")
     .data(censusData)
     .enter()
     .append("circle")
     .attr("cx", d => xLinearScale(d.obesity))
     .attr("cy", d => yLinearScale(d.income))
     .attr("r", "15")
-    .attr("fill", "pink")
-    .attr("opacity", ".5");
+    .attr("fill", "green")
+    .attr("opacity", "1")
+
+    chartGroup.selectAll()
+    .data(censusData)
+    .enter()
+    .append("text")
+    .text(d => (d.abbr))
+    .attr("x", d => xLinearScale(d.obesity))
+    .attr("y", d => yLinearScale(d.income))
+    .style("font-size", "12px")
+    .style("text-anchor", "middle")
+    .style('fill', 'black');
 
     // Step 6: Initialize tool tip
     // ==============================
@@ -96,12 +109,12 @@ d3.csv("assets/data/data.csv").then(function(censusData) {
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
       .attr("class", "axisText")
-      .text("Income vs Obesity");
+      .text("Income($)");
 
     chartGroup.append("text")
       .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
       .attr("class", "axisText")
-      .text("Obesity");
+      .text("Obesity (BMI)");
   }).catch(function(error) {
     console.log(error);
   });
